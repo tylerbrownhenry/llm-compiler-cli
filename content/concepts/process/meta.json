@@ -1,0 +1,19 @@
+{
+  "id": "process",
+  "name": "Development Workflow & Delivery",
+  "description": "Development processes, system architecture, and delivery practices",
+  "priority": 2,
+  "subcategories": [
+    "development-workflow",
+    "system-architecture-and-infrastructure",
+    "documentation-and-communication"
+  ],
+  "applicable_to": {
+    "languages": ["typescript", "javascript", "python", "java", "csharp", "go", "rust"],
+    "project_types": ["web", "api", "library", "cli", "mobile", "desktop"]
+  },
+  "tags": ["process", "workflow", "delivery", "infrastructure"],
+  "version": "1.0.0",
+  "created": "2024-06-28",
+  "updated": "2024-06-28"
+}

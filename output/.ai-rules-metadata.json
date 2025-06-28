@@ -1,0 +1,42 @@
+{
+  "conceptsUsed": [
+    "typescript-standards",
+    "typescript-guidelines",
+    "version-control",
+    "configuration-separation",
+    "exception-handling"
+  ],
+  "generatedAt": "2025-06-28T19:03:26.972Z",
+  "config": {
+    "projectType": "typescript",
+    "philosophy": {
+      "tdd": true,
+      "strictArchitecture": true,
+      "functionalProgramming": true
+    },
+    "tools": {
+      "eslint": false,
+      "stylelint": false,
+      "testing": [],
+      "uiFramework": "react",
+      "i18n": true
+    },
+    "quality": {
+      "accessibility": true,
+      "performance": true,
+      "security": true,
+      "codeReview": true
+    },
+    "infrastructure": {
+      "cicd": true,
+      "logging": true,
+      "monitoring": true,
+      "documentation": true
+    },
+    "output": {
+      "formats": [],
+      "projectName": "test",
+      "customizations": {}
+    }
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "id": "claude-templates",
+  "name": "Claude AI Instructions Templates",
+  "format": "claude",
+  "description": "Templates for generating Claude AI assistant instructions",
+  "templates": [
+    "base-template",
+    "minimal-template",
+    "comprehensive-template"
+  ],
+  "variables": {
+    "project_name": {
+      "type": "string",
+      "required": true,
+      "description": "Name of the project"
+    },
+    "project_type": {
+      "type": "string",
+      "required": true,
+      "description": "Type of project (web, api, library, etc.)"
+    },
+    "philosophy": {
+      "type": "object",
+      "required": false,
+      "description": "Development philosophy configuration"
+    },
+    "concepts": {
+      "type": "array",
+      "required": true,
+      "description": "Applied concepts with metadata and content"
+    },
+    "tools": {
+      "type": "object",
+      "required": false,
+      "description": "Tools and frameworks configuration"
+    }
+  },
+  "version": "1.0.0",
+  "created": "2024-06-28",
+  "updated": "2024-06-28"
+}

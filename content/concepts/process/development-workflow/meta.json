@@ -1,0 +1,21 @@
+{
+  "id": "development-workflow",
+  "name": "Development Workflow",
+  "category": "process",
+  "description": "Development processes, workflows, and team collaboration practices",
+  "priority": 1,
+  "concepts": [
+    "version-control",
+    "ci-cd",
+    "code-review-process",
+    "release-management"
+  ],
+  "applicable_to": {
+    "languages": ["typescript", "javascript", "python", "java", "csharp", "go", "rust"],
+    "project_types": ["web", "api", "library", "cli", "mobile", "desktop"]
+  },
+  "tags": ["workflow", "process", "collaboration", "development"],
+  "version": "1.0.0",
+  "created": "2024-06-28",
+  "updated": "2024-06-28"
+}

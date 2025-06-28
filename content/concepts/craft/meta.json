@@ -1,0 +1,19 @@
+{
+  "id": "craft",
+  "name": "Code Quality & Technical Excellence",
+  "description": "Core technical practices for writing high-quality, maintainable code",
+  "priority": 1,
+  "subcategories": [
+    "testing-and-quality",
+    "typescript-and-type-safety", 
+    "code-architecture-and-design"
+  ],
+  "applicable_to": {
+    "languages": ["typescript", "javascript", "python", "java", "csharp", "go", "rust"],
+    "project_types": ["web", "api", "library", "cli", "mobile", "desktop"]
+  },
+  "tags": ["craft", "quality", "technical-excellence", "best-practices"],
+  "version": "1.0.0",
+  "created": "2024-06-28",
+  "updated": "2024-06-28"
+}

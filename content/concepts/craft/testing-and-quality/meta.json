@@ -1,0 +1,26 @@
+{
+  "id": "testing-and-quality",
+  "name": "Testing & Quality",
+  "category": "craft",
+  "description": "Testing methodologies, quality assurance practices, and code quality standards",
+  "priority": 1,
+  "concepts": [
+    "tdd",
+    "testing-principles", 
+    "code-style",
+    "code-review",
+    "exception-handling",
+    "core-philosophy",
+    "quick-reference",
+    "example-patterns",
+    "common-patterns-to-avoid"
+  ],
+  "applicable_to": {
+    "languages": ["typescript", "javascript", "python", "java", "csharp", "go", "rust"],
+    "project_types": ["web", "api", "library", "cli", "mobile", "desktop"]
+  },
+  "tags": ["testing", "quality", "practices", "standards"],
+  "version": "1.0.0",
+  "created": "2024-06-28",
+  "updated": "2024-06-28"
+}
