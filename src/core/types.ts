@@ -27,7 +27,7 @@ export const ProjectConfigSchema = z.object({
   tools: z.object({
     eslint: z.boolean().default(true),
     stylelint: z.boolean().default(false),
-    testing: z.array(z.enum(['vitest', 'jest', 'react-testing-library'])).default(['vitest', 'react-testing-library']),
+    testing: z.array(z.enum(['vitest', 'jest', 'react-testing-library', 'cypress', 'playwright'])).default(['vitest', 'react-testing-library']),
     stateManagement: z.enum(['redux', 'zustand', 'context', 'none']).optional(),
     uiFramework: z.enum(['react', 'vue', 'angular', 'none']).optional(),
     i18n: z.boolean().default(false),
@@ -45,7 +45,7 @@ export const ProjectConfigSchema = z.object({
     documentation: z.boolean().default(true),
   }),
   output: z.object({
-    formats: z.array(z.enum(['claude', 'vscode', 'readme', 'cursor', 'all'])).default(['all']),
+    formats: z.array(z.enum(['claude', 'vscode', 'readme', 'cursor', 'copilot', 'roocode', 'all'])).default(['all']),
     projectName: z.string().default('My Project'),
     customizations: z.record(z.any()).default({}),
   }),
@@ -82,6 +82,8 @@ export const GeneratedOutputSchema = z.object({
   vscode: z.string().optional(),
   readme: z.string().optional(),
   cursor: z.string().optional(),
+  copilot: z.string().optional(),
+  roocode: z.string().optional(),
   metadata: z.object({
     conceptsUsed: z.array(z.string()),
     generatedAt: z.date(),

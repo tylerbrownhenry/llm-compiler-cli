@@ -1,7 +1,41 @@
-# Development Guidelines for My Project
+# GitHub Copilot Instructions for My Project
 
-## Code Quality & Technical Excellence (CRAFT)
+This file provides specific instructions for GitHub Copilot to follow when working on this project.
 
+## Project Context
+- **Language**: typescript
+- **Architecture**: Strict
+- **Testing Approach**: Test-Driven Development
+- **UI Framework**: react
+
+## Code Generation Preferences
+
+### TypeScript Guidelines
+- Always use strict TypeScript settings
+- Prefer explicit return types for functions
+- Use proper type definitions, avoid `any`
+- Implement type guards for runtime checks
+
+### Testing Requirements
+- Generate tests alongside implementation code
+- Follow Red-Green-Refactor cycle
+- Use descriptive test names that explain behavior
+- Use vitest and react-testing-library for testing
+
+### Functional Programming
+- Prefer pure functions with no side effects
+- Use immutable data structures
+- Avoid mutations, use spread operators or library helpers
+- Compose functions rather than using classes when possible
+
+### Code Style
+- Follow ESLint rules configured for this project
+- Use descriptive variable and function names
+- Keep functions small and focused (single responsibility)
+- Add JSDoc comments for complex functions
+
+### Code Quality Guidelines
+#### Typescript Standards
 # Project Guidelines: TypeScript Usage and Standards
 
 - Use TypeScript strict mode with all strict flags enabled.
@@ -18,6 +52,7 @@
 - Document complex types with JSDoc comments.
 - Run type checking as part of the build process.
 
+#### Typescript Guidelines
 # TypeScript Guidelines
 
 ## Strict Mode Requirements
@@ -90,6 +125,7 @@ import { UserSchema, type User } from "@app/schemas";
 const UserSchema = z.object({ ... }); // Don't redefine!
 ```
 
+#### Exception Handling
 # Project Guidelines: Exception Handling Standards
 
 - Implement consistent error handling across the application.
@@ -106,36 +142,4 @@ const UserSchema = z.object({ ... }); // Don't redefine!
 - Document expected errors and their handling strategies.
 - Always clean up resources in finally blocks.
 
-## Development Workflow & Delivery (PROCESS)
-
-# Project Guidelines: Version Control and Branching Strategy
-
-- Use Git for version control with a clear branching strategy.
-- Main/master branch should always be deployable.
-- Create feature branches from main for new development.
-- Use descriptive branch names (feature/user-authentication).
-- Write clear, concise commit messages in present tense.
-- Make atomic commits that represent single logical changes.
-- Squash commits before merging to maintain clean history.
-- Use pull requests for all changes to main branch.
-- Require code reviews before merging pull requests.
-- Tag releases with semantic versioning (v1.2.3).
-- Keep branch history linear using rebase when appropriate.
-- Delete merged branches to keep repository clean.
-
-# Project Guidelines: Separating Configuration from Logic
-
-- Keep all configuration in dedicated config files or environment variables.
-- Never hardcode environment-specific values in source code.
-- Use environment variables for sensitive data (API keys, passwords).
-- Create separate config files for different environments (dev, staging, prod).
-- Configuration should be loaded once at application startup.
-- Validate configuration values at startup to fail fast.
-- Document all configuration options with descriptions and defaults.
-- Use strongly-typed configuration objects in TypeScript.
-- Group related configuration into logical sections.
-- Provide sensible defaults for optional configuration.
-- Use configuration management tools for complex deployments.
-- Never commit sensitive configuration to version control.
-
-Generated on 6/29/2025 for typescript project
+Generated on 6/29/2025

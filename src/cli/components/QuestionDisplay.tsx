@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Box, Text, useInput } from 'ink';
+import React from 'react';
+import { Box, Text } from 'ink';
 import { Question } from '../../core/types';
 import { SelectInput } from './SelectInput';
 import { MultiSelectInput } from './MultiSelectInput';
@@ -18,27 +18,10 @@ export const QuestionDisplay: React.FC<QuestionDisplayProps> = ({
   question,
   currentAnswer,
   onAnswer,
-  canGoBack,
-  onBack,
 }) => {
-  const [isAnswering, setIsAnswering] = useState(false);
-
   const handleAnswer = (answer: any) => {
-    setIsAnswering(false);
     onAnswer(answer);
   };
-
-  const startAnswering = () => {
-    setIsAnswering(true);
-  };
-
-  useInput((input, key) => {
-    if (!isAnswering) {
-      if (input === ' ' || key.return) {
-        startAnswering();
-      }
-    }
-  });
 
   return (
     <Box flexDirection="column">
@@ -59,7 +42,7 @@ export const QuestionDisplay: React.FC<QuestionDisplayProps> = ({
       )}
 
       {/* Current Answer Display */}
-      {currentAnswer !== undefined && !isAnswering && (
+      {currentAnswer !== undefined && (
         <Box marginBottom={1}>
           <Text color="green">
             Current: {formatAnswer(currentAnswer)}
@@ -69,27 +52,12 @@ export const QuestionDisplay: React.FC<QuestionDisplayProps> = ({
 
       {/* Input Component */}
       <Box>
-        {isAnswering ? (
-          <InputComponent
-            question={question}
-            currentAnswer={currentAnswer}
-            onAnswer={handleAnswer}
-            onCancel={() => setIsAnswering(false)}
-          />
-        ) : (
-          <Box>
-            <Text color="yellow">
-              Press SPACE or ENTER to {currentAnswer !== undefined ? 'change' : 'answer'}
-            </Text>
-            {canGoBack && (
-              <Box marginTop={1}>
-                <Text color="gray">
-                  Press ESC to go back
-                </Text>
-              </Box>
-            )}
-          </Box>
-        )}
+        <InputComponent
+          question={question}
+          currentAnswer={currentAnswer}
+          onAnswer={handleAnswer}
+          onCancel={() => {}} // No-op since we're always showing input
+        />
       </Box>
     </Box>
   );

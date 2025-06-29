@@ -170,6 +170,12 @@ const getGeneratedFiles = (results: GeneratedOutput): Array<{ name: string; size
   if (results.cursor) {
     files.push({ name: '.cursorrules', size: `${Math.round(results.cursor.length / 1024)}KB` });
   }
+  if (results.copilot) {
+    files.push({ name: '.github/copilot-instructions.md', size: `${Math.round(results.copilot.length / 1024)}KB` });
+  }
+  if (results.roocode) {
+    files.push({ name: '.roo/rules/instructions.md', size: `${Math.round(results.roocode.length / 1024)}KB` });
+  }
 
   return files;
 };

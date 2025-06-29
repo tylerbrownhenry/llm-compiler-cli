@@ -70,6 +70,26 @@ export class FileGenerator {
       generatedFiles.push(file);
     }
 
+    // Generate Copilot instructions
+    if (output.copilot) {
+      const githubDir = path.join(this.outputDir, '.github');
+      if (!this.options.dryRun) {
+        await this.ensureDirectoryExists(githubDir);
+      }
+      const file = await this.writeFile('.github/copilot-instructions.md', output.copilot);
+      generatedFiles.push(file);
+    }
+
+    // Generate Roo Code instructions
+    if (output.roocode) {
+      const rooDir = path.join(this.outputDir, '.roo/rules');
+      if (!this.options.dryRun) {
+        await this.ensureDirectoryExists(rooDir);
+      }
+      const file = await this.writeFile('.roo/rules/instructions.md', output.roocode);
+      generatedFiles.push(file);
+    }
+
     // Generate metadata file
     const metadataFile = await this.writeFile(
       '.ai-rules-metadata.json',

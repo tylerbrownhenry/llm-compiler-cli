@@ -57,8 +57,8 @@ export const MultiSelectInput: React.FC<MultiSelectInputProps> = ({
         return (
           <Box key={option}>
             <Text
-              color={isHighlighted ? 'cyan' : 'white'}
-              backgroundColor={isHighlighted ? 'blue' : undefined}
+              color={isHighlighted ? 'black' : 'white'}
+              backgroundColor={isHighlighted ? 'cyan' : undefined}
             >
               {isHighlighted ? '► ' : '  '}
               {isSelected ? '✓ ' : '○ '}

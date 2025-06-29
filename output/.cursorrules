@@ -1,0 +1,26 @@
+# Cursor Rules for My Project
+
+## Project Configuration
+- Language: typescript
+- TDD: Required
+- Architecture: Strict
+
+## Core Principles
+- Always write tests before implementation
+- Prefer functional programming patterns
+- Use immutable data structures
+- Use TypeScript strict mode
+- Never use `any` type
+
+## Code Style
+- Follow ESLint rules
+- Maintain architectural boundaries
+- Use descriptive variable and function names
+- Keep functions small and focused
+
+## Testing Guidelines
+- Use vitest and react-testing-library for testing
+- Follow Red-Green-Refactor cycle
+- Test behavior, not implementation
+
+Generated on 6/29/2025

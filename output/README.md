@@ -1,4 +1,4 @@
-# test
+# My Project
 
 > Generated development guidelines and project setup
 
@@ -34,15 +34,17 @@ This project follows structured development guidelines:
 - **Test-Driven Development**: Write tests before implementation
 - **Strict Architecture**: Enforced architectural boundaries
 - **Functional Programming**: Immutable data and pure functions
-- **Accessibility**: WCAG compliance required
+- **Code Quality**: ESLint for consistent code style
 
 ## 🛠 Technology Stack
 
 - **Language**: typescript
+- **Testing**: vitest, react-testing-library
 - **UI Framework**: react
 
 ## 📚 Documentation
 
 - See `CLAUDE.md` for detailed AI assistant instructions
+- Import `.vscode/settings.json` for IDE configuration
 
-Generated on 6/28/2025
+Generated on 6/29/2025

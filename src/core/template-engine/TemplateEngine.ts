@@ -39,6 +39,14 @@ export class TemplateEngine {
       outputs.cursor = await this.generateCursorRules(config, conceptTemplates);
     }
 
+    if (this.shouldGenerate('copilot', config.output.formats)) {
+      outputs.copilot = await this.generateCopilotInstructions(config, conceptTemplates);
+    }
+
+    if (this.shouldGenerate('roocode', config.output.formats)) {
+      outputs.roocode = await this.generateRooCodeInstructions(config, conceptTemplates);
+    }
+
     return {
       ...outputs,
       metadata: {
@@ -447,5 +455,161 @@ export class TemplateEngine {
       .split('-')
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
+  }
+
+  private async generateCopilotInstructions(config: ProjectConfig, templates: ConceptTemplate[]): Promise<string> {
+    const sections: string[] = [];
+
+    // Header
+    sections.push(`# GitHub Copilot Instructions for ${config.output.projectName}`);
+    sections.push('');
+    sections.push('This file provides specific instructions for GitHub Copilot to follow when working on this project.');
+    sections.push('');
+
+    // Project context
+    sections.push('## Project Context');
+    sections.push(`- **Language**: ${config.projectType}`);
+    sections.push(`- **Architecture**: ${config.philosophy.strictArchitecture ? 'Strict' : 'Flexible'}`);
+    sections.push(`- **Testing Approach**: ${config.philosophy.tdd ? 'Test-Driven Development' : 'Standard Testing'}`);
+    if (config.tools.uiFramework) {
+      sections.push(`- **UI Framework**: ${config.tools.uiFramework}`);
+    }
+    if (config.tools.stateManagement) {
+      sections.push(`- **State Management**: ${config.tools.stateManagement}`);
+    }
+    sections.push('');
+
+    // Code generation preferences
+    sections.push('## Code Generation Preferences');
+    sections.push('');
+
+    if (config.projectType === 'typescript') {
+      sections.push('### TypeScript Guidelines');
+      sections.push('- Always use strict TypeScript settings');
+      sections.push('- Prefer explicit return types for functions');
+      sections.push('- Use proper type definitions, avoid `any`');
+      sections.push('- Implement type guards for runtime checks');
+      sections.push('');
+    }
+
+    if (config.philosophy.tdd) {
+      sections.push('### Testing Requirements');
+      sections.push('- Generate tests alongside implementation code');
+      sections.push('- Follow Red-Green-Refactor cycle');
+      sections.push('- Use descriptive test names that explain behavior');
+      sections.push(`- Use ${config.tools.testing.join(' and ')} for testing`);
+      sections.push('');
+    }
+
+    if (config.philosophy.functionalProgramming) {
+      sections.push('### Functional Programming');
+      sections.push('- Prefer pure functions with no side effects');
+      sections.push('- Use immutable data structures');
+      sections.push('- Avoid mutations, use spread operators or library helpers');
+      sections.push('- Compose functions rather than using classes when possible');
+      sections.push('');
+    }
+
+    // Code style preferences
+    sections.push('### Code Style');
+    if (config.tools.eslint) {
+      sections.push('- Follow ESLint rules configured for this project');
+    }
+    sections.push('- Use descriptive variable and function names');
+    sections.push('- Keep functions small and focused (single responsibility)');
+    sections.push('- Add JSDoc comments for complex functions');
+    sections.push('');
+
+    // Add concept templates as coding guidelines
+    const categorizedTemplates = this.categorizeTemplates(templates);
+    
+    if (categorizedTemplates.craft.length > 0) {
+      sections.push('### Code Quality Guidelines');
+      categorizedTemplates.craft.forEach(template => {
+        sections.push(`#### ${template.name}`);
+        sections.push(template.content);
+        sections.push('');
+      });
+    }
+
+    sections.push(`Generated on ${new Date().toLocaleDateString()}`);
+
+    return sections.join('\n');
+  }
+
+  private async generateRooCodeInstructions(config: ProjectConfig, templates: ConceptTemplate[]): Promise<string> {
+    const sections: string[] = [];
+
+    // Header - Roo Code specific format
+    sections.push(`# Roo Code Instructions for ${config.output.projectName}`);
+    sections.push('');
+    sections.push('## Project Configuration');
+    sections.push('```yaml');
+    sections.push(`project:`);
+    sections.push(`  name: "${config.output.projectName}"`);
+    sections.push(`  type: ${config.projectType}`);
+    sections.push(`  tdd: ${config.philosophy.tdd}`);
+    sections.push(`  strict_architecture: ${config.philosophy.strictArchitecture}`);
+    sections.push(`  functional_programming: ${config.philosophy.functionalProgramming}`);
+    sections.push('');
+    sections.push('tools:');
+    sections.push(`  eslint: ${config.tools.eslint}`);
+    sections.push(`  testing: [${config.tools.testing.map(t => `"${t}"`).join(', ')}]`);
+    if (config.tools.uiFramework) {
+      sections.push(`  ui_framework: "${config.tools.uiFramework}"`);
+    }
+    if (config.tools.stateManagement) {
+      sections.push(`  state_management: "${config.tools.stateManagement}"`);
+    }
+    sections.push('```');
+    sections.push('');
+
+    // Roo Code generation rules
+    sections.push('## Generation Rules');
+    sections.push('');
+
+    if (config.projectType === 'typescript') {
+      sections.push('### TypeScript Rules');
+      sections.push('- Enable strict mode compilation');
+      sections.push('- Generate proper type definitions');
+      sections.push('- Use interfaces for object shapes');
+      sections.push('- Implement proper error handling');
+      sections.push('');
+    }
+
+    if (config.philosophy.tdd) {
+      sections.push('### Test Generation');
+      sections.push('- Auto-generate test files for new components');
+      sections.push('- Include setup and teardown methods');
+      sections.push('- Generate test cases for happy path and edge cases');
+      sections.push('- Mock external dependencies appropriately');
+      sections.push('');
+    }
+
+    sections.push('### File Structure Rules');
+    if (config.philosophy.strictArchitecture) {
+      sections.push('- Enforce layered architecture patterns');
+      sections.push('- Separate concerns into distinct directories');
+      sections.push('- Follow domain-driven design principles');
+    }
+    sections.push('- Use consistent naming conventions');
+    sections.push('- Group related files together');
+    sections.push('');
+
+    // Add templates as generation patterns
+    sections.push('## Code Patterns');
+    const categorizedTemplates = this.categorizeTemplates(templates);
+    
+    categorizedTemplates.craft.forEach(template => {
+      sections.push(`### ${template.name} Pattern`);
+      sections.push('```');
+      sections.push(template.content);
+      sections.push('```');
+      sections.push('');
+    });
+
+    sections.push(`# Generated on ${new Date().toLocaleDateString()}`);
+
+    return sections.join('\n');
   }
 }

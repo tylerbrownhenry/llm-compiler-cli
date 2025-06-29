@@ -40,8 +40,8 @@ export const SelectInput: React.FC<SelectInputProps> = ({
       {options.map((option, index) => (
         <Box key={option}>
           <Text
-            color={index === selectedIndex ? 'cyan' : 'white'}
-            backgroundColor={index === selectedIndex ? 'blue' : undefined}
+            color={index === selectedIndex ? 'black' : 'white'}
+            backgroundColor={index === selectedIndex ? 'cyan' : undefined}
           >
             {index === selectedIndex ? '► ' : '  '}
             {option}

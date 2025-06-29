@@ -5,6 +5,21 @@ import { questions, getNextQuestion } from '../../core/question-engine/questions
 import { QuestionDisplay } from './QuestionDisplay';
 import { ProgressBar } from './ProgressBar';
 
+const getOutputFormats = (formats: string[] | undefined): string[] => {
+  // Handle undefined, null, or empty array - use question default of ['all']
+  if (!formats || formats.length === 0) {
+    return ['claude', 'vscode', 'readme', 'cursor', 'copilot', 'roocode']; // Default to all formats like the question default
+  }
+  
+  // Handle 'all' selection - expand to all available formats
+  if (formats.includes('all')) {
+    return ['claude', 'vscode', 'readme', 'cursor', 'copilot', 'roocode'];
+  }
+  
+  // Return user-selected formats
+  return formats;
+};
+
 interface QuestionWizardProps {
   initialConfig: Partial<ProjectConfig>;
   onComplete: (config: ProjectConfig) => void;
@@ -17,7 +32,19 @@ export const QuestionWizard: React.FC<QuestionWizardProps> = ({
   flags
 }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, any>>(initialConfig);
+  
+  // Initialize answers with question defaults
+  const initializeAnswersWithDefaults = () => {
+    const answersWithDefaults = { ...initialConfig };
+    questions.forEach(question => {
+      if (question.default !== undefined && !answersWithDefaults[question.id]) {
+        answersWithDefaults[question.id] = question.default;
+      }
+    });
+    return answersWithDefaults;
+  };
+  
+  const [answers, setAnswers] = useState<Record<string, any>>(initializeAnswersWithDefaults());
   const [isComplete, setIsComplete] = useState(false);
 
   // Apply flags to initial answers
@@ -72,6 +99,8 @@ export const QuestionWizard: React.FC<QuestionWizardProps> = ({
   };
 
   const transformAnswersToConfig = (rawAnswers: Record<string, any>): any => {
+    const processedFormats = getOutputFormats(rawAnswers.outputFormats);
+    
     return {
       projectType: rawAnswers.projectType || 'typescript',
       philosophy: {
@@ -82,7 +111,13 @@ export const QuestionWizard: React.FC<QuestionWizardProps> = ({
       tools: {
         eslint: rawAnswers.linting?.includes('eslint') ?? true,
         stylelint: rawAnswers.linting?.includes('stylelint') ?? false,
-        testing: rawAnswers.testingFramework || ['vitest', 'react-testing-library'],
+        testing: (() => {
+          const validFrameworks = ['vitest', 'jest', 'react-testing-library', 'cypress', 'playwright'];
+          const filtered = (rawAnswers.testingFramework || ['vitest', 'react-testing-library']).filter(item => 
+            validFrameworks.includes(item)
+          );
+          return filtered.length > 0 ? filtered : ['vitest', 'react-testing-library'];
+        })(),
         stateManagement: rawAnswers.stateManagement,
         uiFramework: rawAnswers.uiFramework,
         i18n: rawAnswers.i18n ?? false,
@@ -100,7 +135,7 @@ export const QuestionWizard: React.FC<QuestionWizardProps> = ({
         documentation: rawAnswers.documentation ?? true,
       },
       output: {
-        formats: rawAnswers.outputFormats || ['claude', 'readme'],
+        formats: processedFormats,
         projectName: rawAnswers.projectName || 'My Project',
         customizations: {},
       },

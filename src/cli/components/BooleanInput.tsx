@@ -37,21 +37,21 @@ export const BooleanInput: React.FC<BooleanInputProps> = ({
       <Box>
         <Box marginRight={4}>
           <Text
-            color={selectedValue ? 'green' : 'gray'}
+            color={selectedValue ? 'white' : 'gray'}
             backgroundColor={selectedValue ? 'green' : undefined}
             bold={selectedValue}
           >
-            {selectedValue ? '✓ Yes' : '  Yes'}
+            {selectedValue ? ' ✓ Yes ' : '  Yes'}
           </Text>
         </Box>
         
         <Box>
           <Text
-            color={!selectedValue ? 'red' : 'gray'}
+            color={!selectedValue ? 'white' : 'gray'}
             backgroundColor={!selectedValue ? 'red' : undefined}
             bold={!selectedValue}
           >
-            {!selectedValue ? '✗ No' : '  No'}
+            {!selectedValue ? ' ✗ No ' : '  No '}
           </Text>
         </Box>
       </Box>

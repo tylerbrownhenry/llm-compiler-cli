@@ -6,7 +6,7 @@
     "configuration-separation",
     "exception-handling"
   ],
-  "generatedAt": "2025-06-28T19:03:26.972Z",
+  "generatedAt": "2025-06-29T22:20:12.777Z",
   "config": {
     "projectType": "typescript",
     "philosophy": {
@@ -15,27 +15,37 @@
       "functionalProgramming": true
     },
     "tools": {
-      "eslint": false,
+      "eslint": true,
       "stylelint": false,
-      "testing": [],
+      "testing": [
+        "vitest",
+        "react-testing-library"
+      ],
       "uiFramework": "react",
-      "i18n": true
+      "i18n": false
     },
     "quality": {
-      "accessibility": true,
-      "performance": true,
-      "security": true,
-      "codeReview": true
+      "accessibility": false,
+      "performance": false,
+      "security": false,
+      "codeReview": false
     },
     "infrastructure": {
-      "cicd": true,
-      "logging": true,
-      "monitoring": true,
-      "documentation": true
+      "cicd": false,
+      "logging": false,
+      "monitoring": false,
+      "documentation": false
     },
     "output": {
-      "formats": [],
-      "projectName": "test",
+      "formats": [
+        "claude",
+        "vscode",
+        "readme",
+        "cursor",
+        "copilot",
+        "roocode"
+      ],
+      "projectName": "My Project",
       "customizations": {}
     }
   }

@@ -147,7 +147,7 @@ export const questions: Question[] = [
     text: 'Which output formats do you want?',
     type: 'multiple',
     category: 'output',
-    options: ['claude', 'vscode', 'readme', 'cursor', 'all'],
+    options: ['claude', 'vscode', 'readme', 'cursor', 'copilot', 'roocode', 'all'],
     default: ['all'],
     description: 'Generated instruction formats',
   },
