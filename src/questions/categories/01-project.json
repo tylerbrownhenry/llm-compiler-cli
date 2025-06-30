@@ -1,0 +1,17 @@
+{
+  "category": "project",
+  "title": "Project Configuration",
+  "description": "Basic project setup and language configuration",
+  "order": 1,
+  "questions": [
+    {
+      "id": "projectType",
+      "text": "What type of project are you building?",
+      "type": "single",
+      "options": ["typescript", "javascript", "python", "other"],
+      "default": "typescript",
+      "description": "This determines the base language-specific guidelines",
+      "required": true
+    }
+  ]
+}

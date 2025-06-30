@@ -1,0 +1,40 @@
+{
+  "category": "infrastructure",
+  "title": "Infrastructure & Operations",
+  "description": "CI/CD, logging, monitoring, and documentation",
+  "order": 5,
+  "questions": [
+    {
+      "id": "cicd",
+      "text": "Do you use CI/CD pipelines?",
+      "type": "boolean",
+      "default": false,
+      "description": "Continuous integration and deployment practices",
+      "required": true
+    },
+    {
+      "id": "logging",
+      "text": "Do you need logging guidelines?",
+      "type": "boolean",
+      "default": false,
+      "description": "Structured logging and monitoring practices",
+      "required": true
+    },
+    {
+      "id": "monitoring",
+      "text": "Do you use application monitoring?",
+      "type": "boolean",
+      "default": false,
+      "description": "APM tools and error tracking",
+      "required": true
+    },
+    {
+      "id": "documentation",
+      "text": "Do you want documentation standards?",
+      "type": "boolean",
+      "default": true,
+      "description": "Code documentation and README guidelines",
+      "required": true
+    }
+  ]
+}

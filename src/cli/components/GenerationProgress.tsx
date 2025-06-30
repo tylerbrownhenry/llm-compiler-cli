@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Box, Text } from 'ink';
-import { ProjectConfig } from '../../core/types';
+import { ProjectConfig } from '../../core/types.js';
 
 interface GenerationProgressProps {
   config: ProjectConfig;

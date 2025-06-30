@@ -1,0 +1,32 @@
+{
+  "category": "philosophy",
+  "title": "Development Philosophy",
+  "description": "Core development principles and practices",
+  "order": 2,
+  "questions": [
+    {
+      "id": "followTDD",
+      "text": "Do you want to follow Test-Driven Development (TDD)?",
+      "type": "boolean",
+      "default": true,
+      "description": "TDD means writing tests before implementation code",
+      "required": true
+    },
+    {
+      "id": "strictArchitecture",
+      "text": "Do you want strictly enforced architecture?",
+      "type": "boolean",
+      "default": true,
+      "description": "Enforces clean architecture patterns and boundaries",
+      "required": true
+    },
+    {
+      "id": "functionalProgramming",
+      "text": "Do you prefer functional programming patterns?",
+      "type": "boolean",
+      "default": true,
+      "description": "Immutable data, pure functions, composition over inheritance",
+      "required": true
+    }
+  ]
+}

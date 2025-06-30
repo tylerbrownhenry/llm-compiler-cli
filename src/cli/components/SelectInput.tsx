@@ -19,7 +19,7 @@ export const SelectInput: React.FC<SelectInputProps> = ({
     return index >= 0 ? index : 0;
   });
 
-  useInput((input, key) => {
+  useInput((_input, key) => {
     if (key.upArrow) {
       setSelectedIndex(prev => prev > 0 ? prev - 1 : options.length - 1);
     } else if (key.downArrow) {
@@ -33,9 +33,11 @@ export const SelectInput: React.FC<SelectInputProps> = ({
 
   return (
     <Box flexDirection="column">
-      <Text color="yellow" marginBottom={1}>
-        Use ↑↓ to navigate, ENTER to select, ESC to cancel
-      </Text>
+      <Box marginBottom={1}>
+        <Text color="yellow">
+          Use ↑↓ to navigate, ENTER to select, ESC to cancel
+        </Text>
+      </Box>
       
       {options.map((option, index) => (
         <Box key={option}>

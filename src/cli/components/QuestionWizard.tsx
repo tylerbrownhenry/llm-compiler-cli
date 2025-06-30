@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Text, useInput } from 'ink';
-import { ProjectConfig, CLIFlags, ProjectConfigSchema } from '../../core/types';
-import { questions, getNextQuestion } from '../../core/question-engine/questions';
-import { QuestionDisplay } from './QuestionDisplay';
-import { ProgressBar } from './ProgressBar';
+import { ProjectConfig, CLIFlags, ProjectConfigSchema } from '../../core/types.js';
+import { getAllQuestions, getNextQuestion } from '../../questions/index.js';
+import { QuestionDisplay } from './QuestionDisplay.js';
+import { ProgressBar } from './ProgressBar.js';
 
 const getOutputFormats = (formats: string[] | undefined): string[] => {
   // Handle undefined, null, or empty array - use question default of ['all']
@@ -32,20 +32,35 @@ export const QuestionWizard: React.FC<QuestionWizardProps> = ({
   flags
 }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  
-  // Initialize answers with question defaults
-  const initializeAnswersWithDefaults = () => {
-    const answersWithDefaults = { ...initialConfig };
-    questions.forEach(question => {
-      if (question.default !== undefined && !answersWithDefaults[question.id]) {
-        answersWithDefaults[question.id] = question.default;
-      }
-    });
-    return answersWithDefaults;
-  };
-  
-  const [answers, setAnswers] = useState<Record<string, any>>(initializeAnswersWithDefaults());
+  const [questions, setQuestions] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [answers, setAnswers] = useState<Record<string, any>>({ ...initialConfig });
   const [isComplete, setIsComplete] = useState(false);
+
+  // Load questions on component mount
+  useEffect(() => {
+    const loadQuestions = async () => {
+      try {
+        const loadedQuestions = await getAllQuestions();
+        setQuestions(loadedQuestions);
+        
+        // Initialize answers with question defaults
+        const answersWithDefaults: Record<string, any> = { ...initialConfig };
+        loadedQuestions.forEach(question => {
+          if (question.default !== undefined && !answersWithDefaults[question.id]) {
+            answersWithDefaults[question.id] = question.default;
+          }
+        });
+        setAnswers(answersWithDefaults);
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Failed to load questions:', error);
+        setIsLoading(false);
+      }
+    };
+    
+    loadQuestions();
+  }, []);
 
   // Apply flags to initial answers
   useEffect(() => {
@@ -61,15 +76,17 @@ export const QuestionWizard: React.FC<QuestionWizardProps> = ({
     }
   }, [flags]);
 
-  const currentQuestion = questions[currentQuestionIndex];
-  const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+  const progress = questions.length > 0 ? ((currentQuestionIndex + 1) / questions.length) * 100 : 0;
 
-  const handleAnswer = (answer: any) => {
+  const handleAnswer = async (answer: any) => {
+    const currentQuestion = questions[currentQuestionIndex];
+    if (!currentQuestion) return;
+    
     const newAnswers = { ...answers, [currentQuestion.id]: answer };
     setAnswers(newAnswers);
 
     // Find next question based on dependencies
-    const nextQuestion = getNextQuestion(currentQuestion.id, newAnswers);
+    const nextQuestion = await getNextQuestion(currentQuestion.id, newAnswers);
     
     if (nextQuestion) {
       const nextIndex = questions.findIndex(q => q.id === nextQuestion.id);
@@ -113,7 +130,7 @@ export const QuestionWizard: React.FC<QuestionWizardProps> = ({
         stylelint: rawAnswers.linting?.includes('stylelint') ?? false,
         testing: (() => {
           const validFrameworks = ['vitest', 'jest', 'react-testing-library', 'cypress', 'playwright'];
-          const filtered = (rawAnswers.testingFramework || ['vitest', 'react-testing-library']).filter(item => 
+          const filtered = (rawAnswers.testingFramework || ['vitest', 'react-testing-library']).filter((item: any) => 
             validFrameworks.includes(item)
           );
           return filtered.length > 0 ? filtered : ['vitest', 'react-testing-library'];
@@ -142,17 +159,42 @@ export const QuestionWizard: React.FC<QuestionWizardProps> = ({
     };
   };
 
-  useInput((input, key) => {
+  useInput((_input, key) => {
     if (key.escape && currentQuestionIndex > 0) {
       handleBack();
     }
   });
+
+  if (isLoading) {
+    return (
+      <Box flexDirection="column" padding={1}>
+        <Text color="cyan">🔄 Loading questions...</Text>
+      </Box>
+    );
+  }
+
+  if (questions.length === 0) {
+    return (
+      <Box flexDirection="column" padding={1}>
+        <Text color="red">❌ Failed to load questions</Text>
+      </Box>
+    );
+  }
 
   if (isComplete) {
     return (
       <Box flexDirection="column" padding={1}>
         <Text color="green">✅ Configuration complete!</Text>
         <Text color="gray">Processing your selections...</Text>
+      </Box>
+    );
+  }
+
+  const currentQuestion = questions[currentQuestionIndex];
+  if (!currentQuestion) {
+    return (
+      <Box flexDirection="column" padding={1}>
+        <Text color="red">❌ Invalid question state</Text>
       </Box>
     );
   }

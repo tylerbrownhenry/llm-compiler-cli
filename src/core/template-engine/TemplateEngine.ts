@@ -1,56 +1,48 @@
-import { promises as fs } from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-import { ProjectConfig, GeneratedOutput, ConceptTemplate } from '../types';
-import { getApplicableConcepts } from '../concept-mapper/concept-rules';
+import { ProjectConfig, GeneratedOutput } from '../types.js';
+import { ContentLoader } from '../../content/loaders/ContentLoader.js';
 
 export class TemplateEngine {
-  private conceptsPath: string;
-  private templatesCache: Map<string, ConceptTemplate> = new Map();
+  private contentLoader: ContentLoader;
 
-  constructor(conceptsPath?: string) {
-    this.conceptsPath = conceptsPath || path.join(__dirname, '../../../concepts');
+  constructor() {
+    this.contentLoader = new ContentLoader();
   }
 
   async generateInstructions(config: ProjectConfig): Promise<GeneratedOutput> {
-    const applicableConcepts = getApplicableConcepts(config);
-    const conceptTemplates = await this.loadConceptTemplates(applicableConcepts);
-    
     const outputs: Partial<GeneratedOutput> = {};
+
+    // Load content sections based on config
+    const contentSections = await this.contentLoader.loadContentForConfig(config);
 
     // Generate each format if requested
     if (this.shouldGenerate('claude', config.output.formats)) {
-      outputs.claude = await this.generateClaudeInstructions(config, conceptTemplates);
+      outputs.claude = await this.generateClaudeInstructions(config, contentSections);
     }
 
     if (this.shouldGenerate('vscode', config.output.formats)) {
-      outputs.vscode = await this.generateVSCodeSettings(config, conceptTemplates);
+      outputs.vscode = await this.generateVSCodeSettings(config);
     }
 
     if (this.shouldGenerate('readme', config.output.formats)) {
-      outputs.readme = await this.generateReadme(config, conceptTemplates);
+      outputs.readme = await this.generateReadme(config, contentSections);
     }
 
     if (this.shouldGenerate('cursor', config.output.formats)) {
-      outputs.cursor = await this.generateCursorRules(config, conceptTemplates);
+      outputs.cursor = await this.generateCursorRules(config, contentSections);
     }
 
     if (this.shouldGenerate('copilot', config.output.formats)) {
-      outputs.copilot = await this.generateCopilotInstructions(config, conceptTemplates);
+      outputs.copilot = await this.generateCopilotInstructions(config, contentSections);
     }
 
     if (this.shouldGenerate('roocode', config.output.formats)) {
-      outputs.roocode = await this.generateRooCodeInstructions(config, conceptTemplates);
+      outputs.roocode = await this.generateRooCodeInstructions(config, contentSections);
     }
 
     return {
       ...outputs,
       metadata: {
-        conceptsUsed: applicableConcepts,
+        conceptsUsed: contentSections.map(s => s.id),
         generatedAt: new Date(),
         config,
       },
@@ -65,174 +57,30 @@ export class TemplateEngine {
     return requestedFormats.includes(format) || requestedFormats.includes('all');
   }
 
-  private async loadConceptTemplates(conceptIds: string[]): Promise<ConceptTemplate[]> {
-    const templates: ConceptTemplate[] = [];
-
-    for (const conceptId of conceptIds) {
-      if (this.templatesCache.has(conceptId)) {
-        templates.push(this.templatesCache.get(conceptId)!);
-        continue;
-      }
-
-      try {
-        const template = await this.loadConceptTemplate(conceptId);
-        if (template) {
-          this.templatesCache.set(conceptId, template);
-          templates.push(template);
-        }
-      } catch (error) {
-        console.warn(`Failed to load template for concept: ${conceptId}`, error);
-      }
-    }
-
-    return templates;
-  }
-
-  private async loadConceptTemplate(conceptId: string): Promise<ConceptTemplate | null> {
-    // Map concept IDs to file paths
-    const conceptToFile = this.getConceptFilePath(conceptId);
-    
-    if (!conceptToFile) {
-      return null;
-    }
-
-    try {
-      const content = await fs.readFile(conceptToFile.filePath, 'utf-8');
-      
-      return {
-        id: conceptId,
-        name: this.formatConceptName(conceptId),
-        category: conceptToFile.category.toLowerCase() as 'craft' | 'process' | 'product',
-        subcategory: conceptToFile.subcategory,
-        content,
-        dependencies: [],
-        conflicts: [],
-        priority: 1,
-      };
-    } catch (error) {
-      console.warn(`Template file not found: ${conceptToFile.filePath}`);
-      return null;
-    }
-  }
-
-  private getConceptFilePath(conceptId: string): { filePath: string; category: string; subcategory: string } | null {
-    // Map concept IDs to their file locations
-    const conceptMappings: Record<string, { category: string; subcategory: string; fileName: string }> = {
-      // CRAFT - Testing & Quality
-      'tdd': { category: 'CRAFT', subcategory: 'testing-and-quality', fileName: 'TDD.md' },
-      'testing-principles': { category: 'CRAFT', subcategory: 'testing-and-quality', fileName: 'TESTING_PRINCIPLES.md' },
-      'code-style': { category: 'CRAFT', subcategory: 'testing-and-quality', fileName: 'CODE_STYLE.md' },
-      'code-review': { category: 'CRAFT', subcategory: 'testing-and-quality', fileName: 'CODE_REVIEW.md' },
-      'exception-handling': { category: 'CRAFT', subcategory: 'testing-and-quality', fileName: 'EXCEPTION_HANDLING.md' },
-      'core-philosophy': { category: 'CRAFT', subcategory: 'testing-and-quality', fileName: 'CORE_PHILOSOPHY.md' },
-      'quick-reference': { category: 'CRAFT', subcategory: 'testing-and-quality', fileName: 'QUICK_REFERENCE.md' },
-      'example-patterns': { category: 'CRAFT', subcategory: 'testing-and-quality', fileName: 'EXAMPLE_PATTERNS.md' },
-      'common-patterns-to-avoid': { category: 'CRAFT', subcategory: 'testing-and-quality', fileName: 'COMMON_PATTERNS_TO_AVOID.md' },
-
-      // CRAFT - TypeScript & Type Safety
-      'typescript-standards': { category: 'CRAFT', subcategory: 'typescript-and-type-safety', fileName: 'TYPESCRIPT_STANDARDS.md' },
-      'typescript-guidelines': { category: 'CRAFT', subcategory: 'typescript-and-type-safety', fileName: 'TYPESCRIPT_GUIDELINES.md' },
-
-      // CRAFT - Code Architecture & Design
-      'atomic-design': { category: 'CRAFT', subcategory: 'code-architecture-and-design', fileName: 'ATOMIC_DESIGN.md' },
-      'architecture-enforcement': { category: 'CRAFT', subcategory: 'code-architecture-and-design', fileName: 'ARCHITECTURE_ENFORCEMENT.md' },
-      'feature-folder-structure': { category: 'CRAFT', subcategory: 'code-architecture-and-design', fileName: 'FEATURE_FOLDER_STRUCTURE.md' },
-      'reusability': { category: 'CRAFT', subcategory: 'code-architecture-and-design', fileName: 'REUSABILITY.md' },
-      'dependency-injection': { category: 'CRAFT', subcategory: 'code-architecture-and-design', fileName: 'DEPENDENCY_INJECTION.md' },
-      'dry-principles': { category: 'CRAFT', subcategory: 'code-architecture-and-design', fileName: 'DRY_PRINCIPLES.md' },
-      'architecture-reviews': { category: 'CRAFT', subcategory: 'code-architecture-and-design', fileName: 'ARCHITECTURE_REVIEWS.md' },
-
-      // PROCESS - Development Workflow
-      'development-workflow': { category: 'PROCESS', subcategory: 'development-workflow', fileName: 'DEVELOPMENT_WORKFLOW.md' },
-      'version-control': { category: 'PROCESS', subcategory: 'development-workflow', fileName: 'VERSION_CONTROL.md' },
-      'ci-cd': { category: 'PROCESS', subcategory: 'development-workflow', fileName: 'CI_CD.md' },
-
-      // PROCESS - System Architecture & Infrastructure
-      'configuration-separation': { category: 'PROCESS', subcategory: 'system-architecture-and-infrastructure', fileName: 'CONFIGURATION_SEPARATION.md' },
-      'state-management': { category: 'PROCESS', subcategory: 'system-architecture-and-infrastructure', fileName: 'STATE_MANAGEMENT.md' },
-      'api-integration': { category: 'PROCESS', subcategory: 'system-architecture-and-infrastructure', fileName: 'API_INTEGRATION.md' },
-      'security': { category: 'PROCESS', subcategory: 'system-architecture-and-infrastructure', fileName: 'SECURITY.md' },
-      'performance': { category: 'PROCESS', subcategory: 'system-architecture-and-infrastructure', fileName: 'PERFORMANCE.md' },
-      'logging-monitoring': { category: 'PROCESS', subcategory: 'system-architecture-and-infrastructure', fileName: 'LOGGING_MONITORING.md' },
-
-      // PROCESS - Documentation & Communication
-      'documentation': { category: 'PROCESS', subcategory: 'documentation-and-communication', fileName: 'DOCUMENTATION.md' },
-      'working-with-claude': { category: 'PROCESS', subcategory: 'documentation-and-communication', fileName: 'WORKING_WITH_CLAUDE.md' },
-      'resources-and-references': { category: 'PROCESS', subcategory: 'documentation-and-communication', fileName: 'RESOURCES_AND_REFERENCES.md' },
-
-      // PRODUCT - User Experience & Interface
-      'design-system': { category: 'PRODUCT', subcategory: 'user-experience-and-interface', fileName: 'DESIGN_SYSTEM.md' },
-      'responsive-design': { category: 'PRODUCT', subcategory: 'user-experience-and-interface', fileName: 'RESPONSIVE_DESIGN.md' },
-      'accessibility': { category: 'PRODUCT', subcategory: 'user-experience-and-interface', fileName: 'ACCESSIBILITY.md' },
-      'i18n': { category: 'PRODUCT', subcategory: 'user-experience-and-interface', fileName: 'I18N.md' },
-      'naming-conventions': { category: 'PRODUCT', subcategory: 'user-experience-and-interface', fileName: 'NAMING_CONVENTIONS.md' },
-    };
-
-    const mapping = conceptMappings[conceptId];
-    if (!mapping) {
-      return null;
-    }
-
-    const filePath = path.join(this.conceptsPath, mapping.category, mapping.subcategory, mapping.fileName);
-    
-    return {
-      filePath,
-      category: mapping.category.toLowerCase(),
-      subcategory: mapping.subcategory,
-    };
-  }
-
-  private async generateClaudeInstructions(config: ProjectConfig, templates: ConceptTemplate[]): Promise<string> {
+  private async generateClaudeInstructions(config: ProjectConfig, contentSections: any[]): Promise<string> {
     const sections: string[] = [];
 
     // Header
     sections.push(`# Development Guidelines for ${config.output.projectName}`);
     sections.push('');
 
-    // Core Philosophy (if TDD is enabled, always include this)
-    if (config.philosophy.tdd) {
-      const corePhilosophy = templates.find(t => t.id === 'core-philosophy');
-      if (corePhilosophy) {
-        sections.push(corePhilosophy.content);
+    // Group content by section
+    const groupedContent = this.groupContentBySection(contentSections);
+
+    // Add content sections in logical order
+    const sectionOrder = ['philosophy', 'language', 'tools', 'quality', 'infrastructure'];
+    
+    for (const sectionName of sectionOrder) {
+      const sectionContent = groupedContent[sectionName];
+      if (sectionContent && sectionContent.length > 0) {
+        sections.push(`## ${this.getSectionTitle(sectionName)}`);
         sections.push('');
+        
+        for (const content of sectionContent) {
+          sections.push(content.content);
+          sections.push('');
+        }
       }
-    }
-
-    // Quick Reference
-    const quickRef = templates.find(t => t.id === 'quick-reference');
-    if (quickRef) {
-      sections.push(quickRef.content);
-      sections.push('');
-    }
-
-    // Add all concept templates organized by category
-    const categorizedTemplates = this.categorizeTemplates(templates);
-
-    if (categorizedTemplates.craft.length > 0) {
-      sections.push('## Code Quality & Technical Excellence (CRAFT)');
-      sections.push('');
-      categorizedTemplates.craft.forEach(template => {
-        sections.push(template.content);
-        sections.push('');
-      });
-    }
-
-    if (categorizedTemplates.process.length > 0) {
-      sections.push('## Development Workflow & Delivery (PROCESS)');
-      sections.push('');
-      categorizedTemplates.process.forEach(template => {
-        sections.push(template.content);
-        sections.push('');
-      });
-    }
-
-    if (categorizedTemplates.product.length > 0) {
-      sections.push('## User-Facing Outcomes (PRODUCT)');
-      sections.push('');
-      categorizedTemplates.product.forEach(template => {
-        sections.push(template.content);
-        sections.push('');
-      });
     }
 
     // Footer
@@ -241,53 +89,7 @@ export class TemplateEngine {
     return sections.join('\n');
   }
 
-  private async generateVSCodeSettings(config: ProjectConfig, _templates: ConceptTemplate[]): Promise<string> {
-    const settings: Record<string, any> = {
-      'editor.formatOnSave': true,
-      'editor.codeActionsOnSave': {
-        'source.fixAll': true,
-      },
-    };
-
-    const extensions: string[] = [];
-
-    // TypeScript specific settings
-    if (config.projectType === 'typescript') {
-      settings['typescript.preferences.includePackageJsonAutoImports'] = 'auto';
-      settings['typescript.preferences.noSemicolons'] = false;
-      extensions.push('ms-vscode.vscode-typescript-next');
-    }
-
-    // ESLint settings
-    if (config.tools.eslint) {
-      settings['eslint.validate'] = ['typescript', 'typescriptreact', 'javascript', 'javascriptreact'];
-      extensions.push('dbaeumer.vscode-eslint');
-    }
-
-    // Testing extensions
-    if (config.tools.testing.includes('vitest')) {
-      extensions.push('zixuanchen.vitest-explorer');
-    }
-    if (config.tools.testing.includes('jest')) {
-      extensions.push('orta.vscode-jest');
-    }
-
-    // UI Framework extensions
-    if (config.tools.uiFramework === 'react') {
-      extensions.push('burkeholland.simple-react-snippets');
-    }
-
-    const vscodeConfig = {
-      settings,
-      extensions: {
-        recommendations: extensions,
-      },
-    };
-
-    return JSON.stringify(vscodeConfig, null, 2);
-  }
-
-  private async generateReadme(config: ProjectConfig, _templates: ConceptTemplate[]): Promise<string> {
+  private async generateReadme(config: ProjectConfig, contentSections: any[]): Promise<string> {
     const sections: string[] = [];
 
     sections.push(`# ${config.output.projectName}`);
@@ -333,21 +135,11 @@ export class TemplateEngine {
     sections.push('This project follows structured development guidelines:');
     sections.push('');
 
-    if (config.philosophy.tdd) {
-      sections.push('- **Test-Driven Development**: Write tests before implementation');
-    }
-    if (config.philosophy.strictArchitecture) {
-      sections.push('- **Strict Architecture**: Enforced architectural boundaries');
-    }
-    if (config.philosophy.functionalProgramming) {
-      sections.push('- **Functional Programming**: Immutable data and pure functions');
-    }
-    if (config.tools.eslint) {
-      sections.push('- **Code Quality**: ESLint for consistent code style');
-    }
-    if (config.quality.accessibility) {
-      sections.push('- **Accessibility**: WCAG compliance required');
-    }
+    // Add guidelines based on loaded content
+    const guidelines = this.extractGuidelinesFromContent(contentSections, config);
+    guidelines.forEach(guideline => {
+      sections.push(`- ${guideline}`);
+    });
 
     sections.push('');
 
@@ -357,10 +149,10 @@ export class TemplateEngine {
     if (config.tools.testing.length > 0) {
       sections.push(`- **Testing**: ${config.tools.testing.join(', ')}`);
     }
-    if (config.tools.uiFramework) {
+    if (config.tools.uiFramework && config.tools.uiFramework !== 'none') {
       sections.push(`- **UI Framework**: ${config.tools.uiFramework}`);
     }
-    if (config.tools.stateManagement) {
+    if (config.tools.stateManagement && config.tools.stateManagement !== 'none') {
       sections.push(`- **State Management**: ${config.tools.stateManagement}`);
     }
     sections.push('');
@@ -378,7 +170,7 @@ export class TemplateEngine {
     return sections.join('\n');
   }
 
-  private async generateCursorRules(config: ProjectConfig, _templates: ConceptTemplate[]): Promise<string> {
+  private async generateCursorRules(config: ProjectConfig, contentSections: any[]): Promise<string> {
     const sections: string[] = [];
 
     sections.push(`# Cursor Rules for ${config.output.projectName}`);
@@ -390,146 +182,46 @@ export class TemplateEngine {
     sections.push(`- Architecture: ${config.philosophy.strictArchitecture ? 'Strict' : 'Flexible'}`);
     sections.push('');
 
+    // Add core principles from content
     sections.push('## Core Principles');
-    if (config.philosophy.tdd) {
-      sections.push('- Always write tests before implementation');
-    }
-    if (config.philosophy.functionalProgramming) {
-      sections.push('- Prefer functional programming patterns');
-      sections.push('- Use immutable data structures');
-    }
-    if (config.projectType === 'typescript') {
-      sections.push('- Use TypeScript strict mode');
-      sections.push('- Never use `any` type');
-    }
+    const principles = this.extractPrinciplesFromContent(contentSections);
+    principles.forEach(principle => {
+      sections.push(`- ${principle}`);
+    });
     sections.push('');
-
-    sections.push('## Code Style');
-    if (config.tools.eslint) {
-      sections.push('- Follow ESLint rules');
-    }
-    if (config.philosophy.strictArchitecture) {
-      sections.push('- Maintain architectural boundaries');
-    }
-    sections.push('- Use descriptive variable and function names');
-    sections.push('- Keep functions small and focused');
-    sections.push('');
-
-    if (config.tools.testing.length > 0) {
-      sections.push('## Testing Guidelines');
-      sections.push(`- Use ${config.tools.testing.join(' and ')} for testing`);
-      if (config.philosophy.tdd) {
-        sections.push('- Follow Red-Green-Refactor cycle');
-        sections.push('- Test behavior, not implementation');
-      }
-      sections.push('');
-    }
-
-    if (config.quality.accessibility) {
-      sections.push('## Accessibility');
-      sections.push('- Follow WCAG guidelines');
-      sections.push('- Include alt text for images');
-      sections.push('- Ensure keyboard navigation');
-      sections.push('');
-    }
 
     sections.push(`Generated on ${new Date().toLocaleDateString()}`);
 
     return sections.join('\n');
   }
 
-  private categorizeTemplates(templates: ConceptTemplate[]): {
-    craft: ConceptTemplate[];
-    process: ConceptTemplate[];
-    product: ConceptTemplate[];
-  } {
-    return {
-      craft: templates.filter(t => t.category === 'craft'),
-      process: templates.filter(t => t.category === 'process'),
-      product: templates.filter(t => t.category === 'product'),
-    };
-  }
-
-  private formatConceptName(conceptId: string): string {
-    return conceptId
-      .split('-')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-  }
-
-  private async generateCopilotInstructions(config: ProjectConfig, templates: ConceptTemplate[]): Promise<string> {
+  private async generateCopilotInstructions(config: ProjectConfig, contentSections: any[]): Promise<string> {
     const sections: string[] = [];
 
-    // Header
     sections.push(`# GitHub Copilot Instructions for ${config.output.projectName}`);
     sections.push('');
     sections.push('This file provides specific instructions for GitHub Copilot to follow when working on this project.');
     sections.push('');
 
-    // Project context
     sections.push('## Project Context');
     sections.push(`- **Language**: ${config.projectType}`);
     sections.push(`- **Architecture**: ${config.philosophy.strictArchitecture ? 'Strict' : 'Flexible'}`);
     sections.push(`- **Testing Approach**: ${config.philosophy.tdd ? 'Test-Driven Development' : 'Standard Testing'}`);
-    if (config.tools.uiFramework) {
-      sections.push(`- **UI Framework**: ${config.tools.uiFramework}`);
-    }
-    if (config.tools.stateManagement) {
-      sections.push(`- **State Management**: ${config.tools.stateManagement}`);
-    }
     sections.push('');
 
-    // Code generation preferences
-    sections.push('## Code Generation Preferences');
+    sections.push('## Code Generation Guidelines');
     sections.push('');
 
-    if (config.projectType === 'typescript') {
-      sections.push('### TypeScript Guidelines');
-      sections.push('- Always use strict TypeScript settings');
-      sections.push('- Prefer explicit return types for functions');
-      sections.push('- Use proper type definitions, avoid `any`');
-      sections.push('- Implement type guards for runtime checks');
-      sections.push('');
-    }
-
-    if (config.philosophy.tdd) {
-      sections.push('### Testing Requirements');
-      sections.push('- Generate tests alongside implementation code');
-      sections.push('- Follow Red-Green-Refactor cycle');
-      sections.push('- Use descriptive test names that explain behavior');
-      sections.push(`- Use ${config.tools.testing.join(' and ')} for testing`);
-      sections.push('');
-    }
-
-    if (config.philosophy.functionalProgramming) {
-      sections.push('### Functional Programming');
-      sections.push('- Prefer pure functions with no side effects');
-      sections.push('- Use immutable data structures');
-      sections.push('- Avoid mutations, use spread operators or library helpers');
-      sections.push('- Compose functions rather than using classes when possible');
-      sections.push('');
-    }
-
-    // Code style preferences
-    sections.push('### Code Style');
-    if (config.tools.eslint) {
-      sections.push('- Follow ESLint rules configured for this project');
-    }
-    sections.push('- Use descriptive variable and function names');
-    sections.push('- Keep functions small and focused (single responsibility)');
-    sections.push('- Add JSDoc comments for complex functions');
-    sections.push('');
-
-    // Add concept templates as coding guidelines
-    const categorizedTemplates = this.categorizeTemplates(templates);
-    
-    if (categorizedTemplates.craft.length > 0) {
-      sections.push('### Code Quality Guidelines');
-      categorizedTemplates.craft.forEach(template => {
-        sections.push(`#### ${template.name}`);
-        sections.push(template.content);
+    // Add content-based guidelines
+    const groupedContent = this.groupContentBySection(contentSections);
+    for (const [sectionName, sectionContent] of Object.entries(groupedContent)) {
+      if (sectionContent.length > 0) {
+        sections.push(`### ${this.getSectionTitle(sectionName)}`);
+        sectionContent.forEach((content: any) => {
+          sections.push(content.content);
+        });
         sections.push('');
-      });
+      }
     }
 
     sections.push(`Generated on ${new Date().toLocaleDateString()}`);
@@ -537,10 +229,9 @@ export class TemplateEngine {
     return sections.join('\n');
   }
 
-  private async generateRooCodeInstructions(config: ProjectConfig, templates: ConceptTemplate[]): Promise<string> {
+  private async generateRooCodeInstructions(config: ProjectConfig, contentSections: any[]): Promise<string> {
     const sections: string[] = [];
 
-    // Header - Roo Code specific format
     sections.push(`# Roo Code Instructions for ${config.output.projectName}`);
     sections.push('');
     sections.push('## Project Configuration');
@@ -551,65 +242,156 @@ export class TemplateEngine {
     sections.push(`  tdd: ${config.philosophy.tdd}`);
     sections.push(`  strict_architecture: ${config.philosophy.strictArchitecture}`);
     sections.push(`  functional_programming: ${config.philosophy.functionalProgramming}`);
-    sections.push('');
-    sections.push('tools:');
-    sections.push(`  eslint: ${config.tools.eslint}`);
-    sections.push(`  testing: [${config.tools.testing.map(t => `"${t}"`).join(', ')}]`);
-    if (config.tools.uiFramework) {
-      sections.push(`  ui_framework: "${config.tools.uiFramework}"`);
-    }
-    if (config.tools.stateManagement) {
-      sections.push(`  state_management: "${config.tools.stateManagement}"`);
-    }
     sections.push('```');
     sections.push('');
 
-    // Roo Code generation rules
     sections.push('## Generation Rules');
     sections.push('');
 
-    if (config.projectType === 'typescript') {
-      sections.push('### TypeScript Rules');
-      sections.push('- Enable strict mode compilation');
-      sections.push('- Generate proper type definitions');
-      sections.push('- Use interfaces for object shapes');
-      sections.push('- Implement proper error handling');
-      sections.push('');
+    // Add content-based rules
+    const groupedContent = this.groupContentBySection(contentSections);
+    for (const [sectionName, sectionContent] of Object.entries(groupedContent)) {
+      if (sectionContent.length > 0) {
+        sections.push(`### ${this.getSectionTitle(sectionName)} Rules`);
+        sectionContent.forEach((content: any) => {
+          // Convert content to rule format
+          const rules = this.convertContentToRules(content.content);
+          rules.forEach(rule => sections.push(`- ${rule}`));
+        });
+        sections.push('');
+      }
     }
-
-    if (config.philosophy.tdd) {
-      sections.push('### Test Generation');
-      sections.push('- Auto-generate test files for new components');
-      sections.push('- Include setup and teardown methods');
-      sections.push('- Generate test cases for happy path and edge cases');
-      sections.push('- Mock external dependencies appropriately');
-      sections.push('');
-    }
-
-    sections.push('### File Structure Rules');
-    if (config.philosophy.strictArchitecture) {
-      sections.push('- Enforce layered architecture patterns');
-      sections.push('- Separate concerns into distinct directories');
-      sections.push('- Follow domain-driven design principles');
-    }
-    sections.push('- Use consistent naming conventions');
-    sections.push('- Group related files together');
-    sections.push('');
-
-    // Add templates as generation patterns
-    sections.push('## Code Patterns');
-    const categorizedTemplates = this.categorizeTemplates(templates);
-    
-    categorizedTemplates.craft.forEach(template => {
-      sections.push(`### ${template.name} Pattern`);
-      sections.push('```');
-      sections.push(template.content);
-      sections.push('```');
-      sections.push('');
-    });
 
     sections.push(`# Generated on ${new Date().toLocaleDateString()}`);
 
     return sections.join('\n');
+  }
+
+  private async generateVSCodeSettings(config: ProjectConfig): Promise<string> {
+    const settings: Record<string, any> = {
+      'editor.formatOnSave': true,
+      'editor.codeActionsOnSave': {
+        'source.fixAll': true,
+      },
+    };
+
+    const extensions: string[] = [];
+
+    // TypeScript specific settings
+    if (config.projectType === 'typescript') {
+      settings['typescript.preferences.includePackageJsonAutoImports'] = 'auto';
+      settings['typescript.preferences.noSemicolons'] = false;
+      extensions.push('ms-vscode.vscode-typescript-next');
+    }
+
+    // ESLint settings
+    if (config.tools.eslint) {
+      settings['eslint.validate'] = ['typescript', 'typescriptreact', 'javascript', 'javascriptreact'];
+      extensions.push('dbaeumer.vscode-eslint');
+    }
+
+    // Testing extensions
+    if (config.tools.testing.includes('vitest')) {
+      extensions.push('zixuanchen.vitest-explorer');
+    }
+    if (config.tools.testing.includes('jest')) {
+      extensions.push('orta.vscode-jest');
+    }
+
+    // UI Framework extensions
+    if (config.tools.uiFramework === 'react') {
+      extensions.push('burkeholland.simple-react-snippets');
+    }
+
+    const vscodeConfig = {
+      settings,
+      extensions: {
+        recommendations: extensions,
+      },
+    };
+
+    return JSON.stringify(vscodeConfig, null, 2);
+  }
+
+  // Helper methods
+  private groupContentBySection(contentSections: any[]): Record<string, any[]> {
+    const grouped: Record<string, any[]> = {};
+    
+    for (const section of contentSections) {
+      if (!grouped[section.section]) {
+        grouped[section.section] = [];
+      }
+      grouped[section.section].push(section);
+    }
+    
+    return grouped;
+  }
+
+  private getSectionTitle(sectionName: string): string {
+    const titles: Record<string, string> = {
+      philosophy: 'Development Philosophy',
+      language: 'Language-Specific Guidelines',
+      tools: 'Development Tools & Quality',
+      quality: 'Quality Assurance',
+      infrastructure: 'Infrastructure & Operations'
+    };
+    
+    return titles[sectionName] || sectionName.charAt(0).toUpperCase() + sectionName.slice(1);
+  }
+
+  private extractGuidelinesFromContent(_contentSections: any[], config: ProjectConfig): string[] {
+    const guidelines: string[] = [];
+    
+    if (config.philosophy.tdd) {
+      guidelines.push('**Test-Driven Development**: Write tests before implementation');
+    }
+    if (config.philosophy.strictArchitecture) {
+      guidelines.push('**Strict Architecture**: Enforced architectural boundaries');
+    }
+    if (config.philosophy.functionalProgramming) {
+      guidelines.push('**Functional Programming**: Immutable data and pure functions');
+    }
+    if (config.tools.eslint) {
+      guidelines.push('**Code Quality**: ESLint for consistent code style');
+    }
+    if (config.quality.accessibility) {
+      guidelines.push('**Accessibility**: WCAG compliance required');
+    }
+    
+    return guidelines;
+  }
+
+  private extractPrinciplesFromContent(contentSections: any[]): string[] {
+    const principles: string[] = [];
+    
+    // Extract principles from content sections
+    for (const section of contentSections) {
+      const lines = section.content.split('\n');
+      for (const line of lines) {
+        if (line.trim().startsWith('- ') && !line.includes('##')) {
+          principles.push(line.trim().substring(2));
+        }
+      }
+    }
+    
+    return principles.slice(0, 10); // Limit to 10 principles
+  }
+
+  private convertContentToRules(content: string): string[] {
+    const rules: string[] = [];
+    const lines = content.split('\n');
+    
+    for (const line of lines) {
+      if (line.trim().startsWith('- ')) {
+        // Convert guideline to rule format
+        let rule = line.trim().substring(2);
+        if (!rule.toLowerCase().includes('generate') && !rule.toLowerCase().includes('ensure')) {
+          rule = `Generate code that ${rule.toLowerCase()}`;
+        }
+        rules.push(rule);
+      }
+    }
+    
+    return rules;
   }
 }

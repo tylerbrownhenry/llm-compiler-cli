@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Text } from 'ink';
-import { CLIMode, CLIFlags, ProjectConfig } from '../../core/types';
-import { QuestionWizard } from './QuestionWizard';
-import { ConceptPreview } from './ConceptPreview';
-import { GenerationProgress } from './GenerationProgress';
-import { ResultsDisplay } from './ResultsDisplay';
-import { ConceptList } from './ConceptList';
-import { useGeneration } from '../hooks/useGeneration';
+import { CLIMode, CLIFlags, ProjectConfig } from '../../core/types.js';
+import { QuestionWizard } from './QuestionWizard.js';
+import { GenerationProgress } from './GenerationProgress.js';
+import { ResultsDisplay } from './ResultsDisplay.js';
+import { useGeneration } from '../hooks/useGeneration.js';
 
 interface CLIAppProps {
   mode: CLIMode;
@@ -30,7 +28,7 @@ export const CLIApp: React.FC<CLIAppProps> = ({ mode, flags }) => {
   });
 
   const [config, setConfig] = useState<Partial<ProjectConfig>>({});
-  const { generateInstructions, isGenerating, results, error } = useGeneration();
+  const { generateInstructions, results, error } = useGeneration();
 
   useEffect(() => {
     if (flags?.config) {
@@ -89,7 +87,24 @@ export const CLIApp: React.FC<CLIAppProps> = ({ mode, flags }) => {
 
       {/* Main Content */}
       <Box flexGrow={1}>
-        {appState === 'list' && <ConceptList />}
+        {appState === 'list' && (
+          <Box flexDirection="column" padding={1}>
+            <Text color="cyan">📋 Available Features</Text>
+            <Text>• Test-Driven Development (TDD)</Text>
+            <Text>• Strict Architecture Enforcement</Text>
+            <Text>• Functional Programming Guidelines</Text>
+            <Text>• TypeScript Standards</Text>
+            <Text>• Code Quality & Linting</Text>
+            <Text>• Accessibility Compliance</Text>
+            <Text>• Security Best Practices</Text>
+            <Text>• Performance Optimization</Text>
+            <Text>• CI/CD Integration</Text>
+            <Text>• Documentation Standards</Text>
+            <Box marginTop={1}>
+              <Text color="gray">Run 'ai-rules init' to configure your project</Text>
+            </Box>
+          </Box>
+        )}
         
         {appState === 'questions' && (
           <QuestionWizard
@@ -100,14 +115,13 @@ export const CLIApp: React.FC<CLIAppProps> = ({ mode, flags }) => {
         )}
         
         {appState === 'preview' && (
-          <ConceptPreview
-            config={config as ProjectConfig}
-            onBack={handleRestart}
-            onGenerate={() => {
-              setAppState('generating');
-              generateInstructions(config as ProjectConfig);
-            }}
-          />
+          <Box flexDirection="column" padding={1}>
+            <Text color="cyan">🔍 Preview Mode</Text>
+            <Text color="gray">Configuration preview coming soon...</Text>
+            <Box marginTop={1}>
+              <Text color="gray">Use 'ai-rules generate' to create instructions directly</Text>
+            </Box>
+          </Box>
         )}
         
         {appState === 'generating' && (

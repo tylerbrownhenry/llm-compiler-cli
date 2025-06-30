@@ -1,0 +1,25 @@
+{
+  "category": "output",
+  "title": "Output Configuration",
+  "description": "Generated output formats and project settings",
+  "order": 6,
+  "questions": [
+    {
+      "id": "outputFormats",
+      "text": "Which output formats do you want?",
+      "type": "multiple",
+      "options": ["claude", "vscode", "readme", "cursor", "copilot", "roocode", "all"],
+      "default": ["all"],
+      "description": "Generated instruction formats",
+      "required": true
+    },
+    {
+      "id": "projectName",
+      "text": "What is your project name?",
+      "type": "text",
+      "default": "My Project",
+      "description": "Used in generated documentation",
+      "required": true
+    }
+  ]
+}

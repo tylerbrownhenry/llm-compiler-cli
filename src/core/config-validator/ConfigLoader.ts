@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import yaml from 'yaml';
-import { ProjectConfig, ProjectConfigSchema } from '../types';
+import { ProjectConfig, ProjectConfigSchema } from '../types.js';
 
 export interface ConfigValidationError {
   field: string;

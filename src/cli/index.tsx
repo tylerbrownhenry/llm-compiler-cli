@@ -1,23 +1,23 @@
 #!/usr/bin/env node
 
-import React from 'react';
+import { createElement } from 'react';
 import { render } from 'ink';
 import { Command } from 'commander';
-import { CLIApp } from './components/CLIApp';
-import { CLIMode, CLIFlags } from '../core/types';
+import { CLIApp } from './components/CLIApp.js';
+import { CLIMode, CLIFlags } from '../core/types.js';
 
 const program = new Command();
 
 program
-  .name('ai-rules-gen')
-  .description('Generate customized LLM instructions based on project selections')
+  .name('ai-rules')
+  .description('Generate AI coding assistant instructions for your project (Claude, Copilot, Cursor, etc.)')
   .version('1.0.0');
 
 program
   .command('init')
   .description('Start interactive setup wizard')
   .action(() => {
-    render(<CLIApp mode="interactive" />);
+    render(createElement(CLIApp, { mode: "interactive" }));
   });
 
 program
@@ -32,14 +32,14 @@ program
   .option('-p, --preview', 'preview mode (don\'t generate files)')
   .action((options: CLIFlags) => {
     const mode: CLIMode = options.preview ? 'preview' : 'generate';
-    render(<CLIApp mode={mode} flags={options} />);
+    render(createElement(CLIApp, { mode, flags: options }));
   });
 
 program
   .command('list')
   .description('List available concepts and their descriptions')
   .action(() => {
-    render(<CLIApp mode="list" />);
+    render(createElement(CLIApp, { mode: "list" }));
   });
 
 program
@@ -50,7 +50,7 @@ program
   .option('--strict-arch', 'enable strict architecture enforcement')
   .option('-c, --config <path>', 'config file path')
   .action((options: CLIFlags) => {
-    render(<CLIApp mode="preview" flags={options} />);
+    render(createElement(CLIApp, { mode: "preview", flags: options }));
   });
 
 // Handle unknown commands
@@ -62,7 +62,7 @@ program.on('command:*', () => {
 // Parse arguments
 if (process.argv.length === 2) {
   // No arguments provided, show interactive mode
-  render(<CLIApp mode="interactive" />);
+  render(createElement(CLIApp, { mode: "interactive" }));
 } else {
   program.parse(process.argv);
 }

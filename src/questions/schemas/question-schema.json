@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Question Category Schema",
+  "type": "object",
+  "required": ["category", "title", "description", "order", "questions"],
+  "properties": {
+    "category": {
+      "type": "string",
+      "description": "Unique identifier for the category"
+    },
+    "title": {
+      "type": "string",
+      "description": "Human-readable title for the category"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of what this category covers"
+    },
+    "order": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Display order for this category"
+    },
+    "questions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Question"
+      },
+      "minItems": 1,
+      "description": "Array of questions in this category"
+    }
+  },
+  "definitions": {
+    "Question": {
+      "type": "object",
+      "required": ["id", "text", "type", "required"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9]*$",
+          "description": "Unique identifier for the question"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 5,
+          "description": "The question text displayed to users"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["single", "multiple", "boolean", "text"],
+          "description": "Type of question input"
+        },
+        "options": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "description": "Available options for single/multiple choice questions"
+        },
+        "default": {
+          "description": "Default value for the question"
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Question IDs that must be answered before this question"
+        },
+        "required": {
+          "type": "boolean",
+          "description": "Whether this question must be answered"
+        },
+        "description": {
+          "type": "string",
+          "description": "Help text explaining the question"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "type": { "enum": ["single", "multiple"] } }
+          },
+          "then": {
+            "required": ["options"]
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,14 +1,17 @@
 {
-  "name": "ai-rules-generator",
+  "name": "llm-compiler-cli",
   "version": "1.0.0",
   "type": "module",
-  "description": "Generate customized LLM instructions based on project selections",
+  "description": "Generate AI coding assistant instructions for your project (Claude, Copilot, Cursor, etc.)",
   "main": "dist/index.js",
   "bin": {
+    "ai-rules": "./dist/cli/index.js",
     "ai-rules-gen": "./dist/cli/index.js"
   },
   "scripts": {
-    "build": "tsc",
+    "clean": "rm -rf dist",
+    "build": "npm run clean && tsc",
+    "build:watch": "tsc --watch",
     "dev": "tsx src/cli/index.tsx",
     "test": "vitest",
     "test:watch": "vitest --watch",
@@ -16,15 +19,13 @@
     "lint:fix": "eslint src --ext .ts,.tsx --fix",
     "typecheck": "tsc --noEmit",
     "start": "node dist/cli/index.js",
-    "prepublish": "npm run build"
+    "prepublishOnly": "npm run lint && npm run test && npm run build",
+    "postinstall": "node scripts/post-install.js"
   },
   "keywords": [
-    "llm",
-    "ai",
-    "code-generation",
-    "development-guidelines",
-    "cli",
-    "typescript"
+    "ai", "llm", "claude", "copilot", "cursor", "roo-code",
+    "development-guidelines", "ai-instructions", "cli",
+    "typescript", "code-generation"
   ],
   "author": "AI Rules Generator",
   "license": "MIT",
@@ -56,8 +57,18 @@
     "node": ">=18.0.0"
   },
   "files": [
-    "dist",
-    "templates",
-    "README.md"
-  ]
+    "dist/",
+    "content/",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/llm-compiler-cli"
+  },
+  "homepage": "https://github.com/yourusername/llm-compiler-cli#readme",
+  "bugs": {
+    "url": "https://github.com/yourusername/llm-compiler-cli/issues"
+  }
 }

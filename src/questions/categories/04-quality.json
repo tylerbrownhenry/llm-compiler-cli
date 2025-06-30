@@ -1,0 +1,40 @@
+{
+  "category": "quality",
+  "title": "Quality Assurance",
+  "description": "Code quality and best practices",
+  "order": 4,
+  "questions": [
+    {
+      "id": "accessibility",
+      "text": "Do you need accessibility (a11y) compliance?",
+      "type": "boolean",
+      "default": true,
+      "description": "WCAG guidelines and screen reader support",
+      "required": true
+    },
+    {
+      "id": "performance",
+      "text": "Do you want performance optimization guidelines?",
+      "type": "boolean",
+      "default": true,
+      "description": "Performance monitoring and optimization techniques",
+      "required": true
+    },
+    {
+      "id": "security",
+      "text": "Do you need security best practices?",
+      "type": "boolean",
+      "default": true,
+      "description": "Secure coding practices and vulnerability prevention",
+      "required": true
+    },
+    {
+      "id": "codeReview",
+      "text": "Do you want code review process guidelines?",
+      "type": "boolean",
+      "default": true,
+      "description": "Pull request and code review standards",
+      "required": true
+    }
+  ]
+}

@@ -1,10 +1,10 @@
 import React from 'react';
 import { Box, Text } from 'ink';
-import { Question } from '../../core/types';
-import { SelectInput } from './SelectInput';
-import { MultiSelectInput } from './MultiSelectInput';
-import { BooleanInput } from './BooleanInput';
-import { TextInput } from './TextInput';
+import { Question } from '../../core/types.js';
+import { SelectInput } from './SelectInput.js';
+import { MultiSelectInput } from './MultiSelectInput.js';
+import { BooleanInput } from './BooleanInput.js';
+import { TextInput } from './TextInput.js';
 
 interface QuestionDisplayProps {
   question: Question;

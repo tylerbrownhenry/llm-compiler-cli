@@ -1,13 +1,8 @@
 import { useState, useCallback } from 'react';
-import { ProjectConfig, GeneratedOutput } from '../../core/types';
-import { TemplateEngine } from '../../core/template-engine/TemplateEngine';
-import { FileGenerator } from '../../core/template-engine/FileGenerator';
+import { ProjectConfig, GeneratedOutput } from '../../core/types.js';
+import { TemplateEngine } from '../../core/template-engine/TemplateEngine.js';
+import { FileGenerator } from '../../core/template-engine/FileGenerator.js';
 import path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 interface UseGenerationReturn {
   generateInstructions: (config: ProjectConfig) => Promise<void>;
@@ -33,8 +28,7 @@ export const useGeneration = (): UseGenerationReturn => {
     setGeneratedFiles(null);
 
     try {
-      const conceptsPath = '/Users/tylerhenry/Desktop/ai-rules'; // Point to our ai-rules folder
-      const templateEngine = new TemplateEngine(conceptsPath);
+      const templateEngine = new TemplateEngine();
       
       const generatedOutput = await templateEngine.generateInstructions(config);
       

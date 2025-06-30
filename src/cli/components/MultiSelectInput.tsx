@@ -40,9 +40,11 @@ export const MultiSelectInput: React.FC<MultiSelectInputProps> = ({
 
   return (
     <Box flexDirection="column">
-      <Text color="yellow" marginBottom={1}>
-        Use ↑↓ to navigate, SPACE to toggle, ENTER to confirm, ESC to cancel
-      </Text>
+      <Box marginBottom={1}>
+        <Text color="yellow">
+          Use ↑↓ to navigate, SPACE to toggle, ENTER to confirm, ESC to cancel
+        </Text>
+      </Box>
       
       <Box marginBottom={1}>
         <Text color="green">

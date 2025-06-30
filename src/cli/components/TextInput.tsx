@@ -31,9 +31,11 @@ export const TextInput: React.FC<TextInputProps> = ({
 
   return (
     <Box flexDirection="column">
-      <Text color="yellow" marginBottom={1}>
-        Type your answer, ENTER to confirm, ESC to cancel
-      </Text>
+      <Box marginBottom={1}>
+        <Text color="yellow">
+          Type your answer, ENTER to confirm, ESC to cancel
+        </Text>
+      </Box>
       
       <Box>
         <Text color="cyan">

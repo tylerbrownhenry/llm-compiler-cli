@@ -30,9 +30,11 @@ export const BooleanInput: React.FC<BooleanInputProps> = ({
 
   return (
     <Box flexDirection="column">
-      <Text color="yellow" marginBottom={1}>
-        Use ←→ to toggle, ENTER to confirm, ESC to cancel, or press Y/N
-      </Text>
+      <Box marginBottom={1}>
+        <Text color="yellow">
+          Use ←→ to toggle, ENTER to confirm, ESC to cancel, or press Y/N
+        </Text>
+      </Box>
       
       <Box>
         <Box marginRight={4}>

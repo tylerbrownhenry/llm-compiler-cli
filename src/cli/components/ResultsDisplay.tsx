@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Text, useInput } from 'ink';
-import { GeneratedOutput, ProjectConfig } from '../../core/types';
+import { GeneratedOutput, ProjectConfig } from '../../core/types.js';
 
 interface ResultsDisplayProps {
   results: GeneratedOutput;

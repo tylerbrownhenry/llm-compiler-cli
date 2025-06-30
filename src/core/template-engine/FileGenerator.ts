@@ -1,6 +1,6 @@
 import { promises as fs } from 'fs';
 import path from 'path';
-import { GeneratedOutput, ProjectConfig } from '../types';
+import { GeneratedOutput } from '../types.js';
 
 export interface FileGenerationOptions {
   outputDir: string;

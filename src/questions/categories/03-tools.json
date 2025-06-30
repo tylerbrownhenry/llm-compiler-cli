@@ -1,0 +1,52 @@
+{
+  "category": "tools",
+  "title": "Development Tools",
+  "description": "Tools and frameworks for development",
+  "order": 3,
+  "questions": [
+    {
+      "id": "linting",
+      "text": "Which linting tools do you use?",
+      "type": "multiple",
+      "options": ["eslint", "stylelint", "prettier"],
+      "default": ["eslint", "prettier"],
+      "description": "Code quality and formatting tools",
+      "required": true
+    },
+    {
+      "id": "testingFramework",
+      "text": "Which testing frameworks do you use?",
+      "type": "multiple",
+      "options": ["vitest", "jest", "react-testing-library", "cypress", "playwright"],
+      "default": ["vitest", "react-testing-library"],
+      "description": "Testing tools and frameworks",
+      "dependencies": ["followTDD"],
+      "required": true
+    },
+    {
+      "id": "uiFramework",
+      "text": "Which UI framework are you using?",
+      "type": "single",
+      "options": ["react", "vue", "angular", "svelte", "none"],
+      "description": "Frontend framework for UI development",
+      "required": true
+    },
+    {
+      "id": "stateManagement",
+      "text": "What state management solution do you use?",
+      "type": "single",
+      "options": ["redux", "zustand", "context", "mobx", "none"],
+      "description": "Global state management approach",
+      "dependencies": ["uiFramework"],
+      "required": true
+    },
+    {
+      "id": "i18n",
+      "text": "Do you need internationalization (i18n) support?",
+      "type": "boolean",
+      "default": false,
+      "description": "Multi-language support for your application",
+      "required": true
+    }
+  ]
+}

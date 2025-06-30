@@ -28,8 +28,8 @@ export const ProjectConfigSchema = z.object({
     eslint: z.boolean().default(true),
     stylelint: z.boolean().default(false),
     testing: z.array(z.enum(['vitest', 'jest', 'react-testing-library', 'cypress', 'playwright'])).default(['vitest', 'react-testing-library']),
-    stateManagement: z.enum(['redux', 'zustand', 'context', 'none']).optional(),
-    uiFramework: z.enum(['react', 'vue', 'angular', 'none']).optional(),
+    stateManagement: z.enum(['redux', 'zustand', 'context', 'mobx', 'none']).optional(),
+    uiFramework: z.enum(['react', 'vue', 'angular', 'svelte', 'none']).optional(),
     i18n: z.boolean().default(false),
   }),
   quality: z.object({
@@ -53,30 +53,6 @@ export const ProjectConfigSchema = z.object({
 
 export type ProjectConfig = z.infer<typeof ProjectConfigSchema>;
 
-export const ConceptRuleSchema = z.object({
-  conceptId: z.string(),
-  conditions: z.array(z.object({
-    field: z.string(),
-    operator: z.enum(['equals', 'includes', 'exists']),
-    value: z.any(),
-  })),
-  priority: z.number(),
-  conflicts: z.array(z.string()).optional(),
-  category: z.enum(['craft', 'process', 'product']),
-});
-
-export type ConceptRule = z.infer<typeof ConceptRuleSchema>;
-
-export const SelectionMatrixSchema = z.object({
-  projectType: z.string(),
-  selections: z.record(z.any()),
-  derivedConcepts: z.array(z.string()),
-  outputFormats: z.array(z.string()),
-  timestamp: z.date().default(() => new Date()),
-});
-
-export type SelectionMatrix = z.infer<typeof SelectionMatrixSchema>;
-
 export const GeneratedOutputSchema = z.object({
   claude: z.string().optional(),
   vscode: z.string().optional(),
@@ -92,35 +68,6 @@ export const GeneratedOutputSchema = z.object({
 });
 
 export type GeneratedOutput = z.infer<typeof GeneratedOutputSchema>;
-
-export interface ConceptTemplate {
-  id: string;
-  name: string;
-  category: 'craft' | 'process' | 'product';
-  subcategory: string;
-  content: string;
-  dependencies: string[];
-  conflicts: string[];
-  priority: number;
-}
-
-export interface QuestionFlow {
-  questions: Question[];
-  conditionalLogic: ConditionalRule[];
-}
-
-export interface ConditionalRule {
-  if: {
-    field: string;
-    operator: 'equals' | 'includes' | 'exists';
-    value: any;
-  };
-  then: {
-    showQuestions?: string[];
-    hideQuestions?: string[];
-    setDefaults?: Record<string, any>;
-  };
-}
 
 export type CLIMode = 'interactive' | 'generate' | 'preview' | 'list';
 
