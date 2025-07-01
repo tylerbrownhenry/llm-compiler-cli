@@ -1,4 +1,4 @@
-# Cursor Rules for My Project
+# Cursor Rules for My Projectaaaaaa
 
 ## Project Configuration
 - Language: typescript
@@ -6,21 +6,15 @@
 - Architecture: Strict
 
 ## Core Principles
-- Always write tests before implementation
-- Prefer functional programming patterns
-- Use immutable data structures
+- **ALWAYS write tests before implementation code**
+- Follow the Red-Green-Refactor cycle:
+- Test behavior, not implementation details
+- Keep tests simple, focused, and readable
 - Use TypeScript strict mode
-- Never use `any` type
+- Never use `any` type - define proper interfaces
+- Prefer explicit return types for functions
+- Use type guards for runtime type checking
+- Implement comprehensive error handling with typed errors
+- Follow ESLint rules strictly
 
-## Code Style
-- Follow ESLint rules
-- Maintain architectural boundaries
-- Use descriptive variable and function names
-- Keep functions small and focused
-
-## Testing Guidelines
-- Use vitest and react-testing-library for testing
-- Follow Red-Green-Refactor cycle
-- Test behavior, not implementation
-
-Generated on 6/29/2025
+Generated on 6/30/2025

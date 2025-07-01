@@ -1,6 +1,6 @@
 import { promises as fs } from 'fs';
 import path from 'path';
-import { ProjectConfig } from '../../core/types.js';
+import { ProjectConfig } from '../../../core/types.js';
 import { ContentSection } from '../types/ContentTypes.js';
 import { getApplicableContent } from '../mapping/content-mapping.js';
 
@@ -9,7 +9,7 @@ export class ContentLoader {
   private contentCache: Map<string, string> = new Map();
 
   constructor(contentPath?: string) {
-    this.contentPath = contentPath || path.join(process.cwd(), 'src/content');
+    this.contentPath = contentPath || path.join(process.cwd(), 'src/resources/content');
   }
 
   async loadContentForConfig(config: ProjectConfig): Promise<ContentSection[]> {
@@ -28,7 +28,7 @@ export class ContentLoader {
           priority: rule.priority
         });
       } catch (error) {
-        console.warn(`Failed to load content: ${rule.contentPath}`, error);
+        // Skip files that fail to load
       }
     }
 

@@ -7,7 +7,7 @@ export class QuestionLoader {
   private loadedQuestions: LoadedQuestions | null = null;
 
   constructor(categoriesPath?: string) {
-    this.categoriesPath = categoriesPath || path.join(process.cwd(), 'src/questions/categories');
+    this.categoriesPath = categoriesPath || path.join(process.cwd(), 'src/resources/questions/categories');
   }
 
   async loadQuestions(): Promise<LoadedQuestions> {

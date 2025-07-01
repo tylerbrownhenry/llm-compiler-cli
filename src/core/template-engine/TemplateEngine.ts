@@ -1,5 +1,5 @@
 import { ProjectConfig, GeneratedOutput } from '../types.js';
-import { ContentLoader } from '../../content/loaders/ContentLoader.js';
+import { ContentLoader } from '../../resources/content/loaders/ContentLoader.js';
 
 export class TemplateEngine {
   private contentLoader: ContentLoader;

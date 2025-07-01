@@ -1,15 +1,7 @@
-# GitHub Copilot Instructions for My Projectaaaaaa
+# Development Guidelines for My Projectaaaaaa
 
-This file provides specific instructions for GitHub Copilot to follow when working on this project.
+## Development Philosophy
 
-## Project Context
-- **Language**: typescript
-- **Architecture**: Strict
-- **Testing Approach**: Test-Driven Development
-
-## Code Generation Guidelines
-
-### Development Philosophy
 ## Core Development Philosophy
 
 ### Test-Driven Development (TDD)
@@ -20,18 +12,21 @@ This file provides specific instructions for GitHub Copilot to follow when worki
   3. **Refactor**: Clean up code while keeping tests green
 - Test behavior, not implementation details
 - Keep tests simple, focused, and readable
+
 ### Strict Architecture
 - Maintain clear separation of concerns
 - Follow layered architecture patterns (controllers, services, repositories)
 - Enforce module boundaries and dependencies
 - Use dependency injection for loose coupling
+
 ### Functional Programming
 - Prefer pure functions with no side effects
 - Use immutable data structures
 - Avoid mutations, use spread operators or library helpers
 - Compose functions rather than using classes when possible
 
-### Language-Specific Guidelines
+## Language-Specific Guidelines
+
 ## Language-Specific Guidelines
 
 ### TypeScript Standards
@@ -41,12 +36,14 @@ This file provides specific instructions for GitHub Copilot to follow when worki
 - Use type guards for runtime type checking
 - Implement comprehensive error handling with typed errors
 
-### Development Tools & Quality
+## Development Tools & Quality
+
 ### Code Quality
 - Follow ESLint rules strictly
 - Use consistent formatting with Prettier
 - Keep functions small and focused (single responsibility)
 - Use descriptive variable and function names
+
 ### Testing Guidelines
 - Use vitest and react-testing-library for testing
 
@@ -56,4 +53,4 @@ This file provides specific instructions for GitHub Copilot to follow when worki
 - Use descriptive test names that explain behavior
 - Mock external dependencies appropriately
 
-Generated on 6/30/2025
+Generated on 6/30/2025 for typescript project

@@ -1,12 +1,13 @@
 {
   "conceptsUsed": [
-    "typescript-standards",
-    "typescript-guidelines",
-    "version-control",
-    "configuration-separation",
-    "exception-handling"
+    "philosophy-tdd",
+    "project-typescript",
+    "tools-eslint",
+    "philosophy-strict-architecture",
+    "tools-testing",
+    "philosophy-functional-programming"
   ],
-  "generatedAt": "2025-06-29T22:20:12.777Z",
+  "generatedAt": "2025-06-30T23:14:51.750Z",
   "config": {
     "projectType": "typescript",
     "philosophy": {
@@ -21,6 +22,7 @@
         "vitest",
         "react-testing-library"
       ],
+      "stateManagement": "redux",
       "uiFramework": "react",
       "i18n": false
     },
@@ -45,7 +47,7 @@
         "copilot",
         "roocode"
       ],
-      "projectName": "My Project",
+      "projectName": "My Projectaaaaaa",
       "customizations": {}
     }
   }

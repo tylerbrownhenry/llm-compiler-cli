@@ -1,153 +1,47 @@
-# Roo Code Instructions for My Project
+# Roo Code Instructions for My Projectaaaaaa
 
 ## Project Configuration
 ```yaml
 project:
-  name: "My Project"
+  name: "My Projectaaaaaa"
   type: typescript
   tdd: true
   strict_architecture: true
   functional_programming: true
-
-tools:
-  eslint: true
-  testing: ["vitest", "react-testing-library"]
-  ui_framework: "react"
 ```
 
 ## Generation Rules
 
-### TypeScript Rules
-- Enable strict mode compilation
-- Generate proper type definitions
-- Use interfaces for object shapes
-- Implement proper error handling
+### Development Philosophy Rules
+- Generate code that **always write tests before implementation code**
+- Generate code that follow the red-green-refactor cycle:
+- Generate code that test behavior, not implementation details
+- Generate code that keep tests simple, focused, and readable
+- Generate code that maintain clear separation of concerns
+- Generate code that follow layered architecture patterns (controllers, services, repositories)
+- Generate code that enforce module boundaries and dependencies
+- Generate code that use dependency injection for loose coupling
+- Generate code that prefer pure functions with no side effects
+- Generate code that use immutable data structures
+- Generate code that avoid mutations, use spread operators or library helpers
+- Generate code that compose functions rather than using classes when possible
 
-### Test Generation
-- Auto-generate test files for new components
-- Include setup and teardown methods
-- Generate test cases for happy path and edge cases
-- Mock external dependencies appropriately
+### Language-Specific Guidelines Rules
+- Generate code that use typescript strict mode
+- Generate code that never use `any` type - define proper interfaces
+- Generate code that prefer explicit return types for functions
+- Generate code that use type guards for runtime type checking
+- Generate code that implement comprehensive error handling with typed errors
 
-### File Structure Rules
-- Enforce layered architecture patterns
-- Separate concerns into distinct directories
-- Follow domain-driven design principles
-- Use consistent naming conventions
-- Group related files together
+### Development Tools & Quality Rules
+- Generate code that follow eslint rules strictly
+- Generate code that use consistent formatting with prettier
+- Generate code that keep functions small and focused (single responsibility)
+- Generate code that use descriptive variable and function names
+- Generate code that use vitest and react-testing-library for testing
+- Generate code that follow tdd practices: write tests first
+- Generate code that aim for high test coverage (>90% for critical paths)
+- Generate code that use descriptive test names that explain behavior
+- Generate code that mock external dependencies appropriately
 
-## Code Patterns
-### Typescript Standards Pattern
-```
-# Project Guidelines: TypeScript Usage and Standards
-
-- Use TypeScript strict mode with all strict flags enabled.
-- Avoid using `any` type; use `unknown` when type is truly unknown.
-- Define explicit return types for all functions.
-- Use interfaces for object shapes and types for unions/primitives.
-- Leverage TypeScript's type inference where it improves readability.
-- Create type definitions for all API responses and requests.
-- Use enums for fixed sets of values, const assertions for literals.
-- Implement proper error types instead of throwing plain strings.
-- Utilize generics to create reusable, type-safe components.
-- Use type guards and discriminated unions for runtime type checking.
-- Keep type definitions close to their usage, preferably in the same file.
-- Document complex types with JSDoc comments.
-- Run type checking as part of the build process.
-```
-
-### Typescript Guidelines Pattern
-```
-# TypeScript Guidelines
-
-## Strict Mode Requirements
-```typescript
-// tsconfig.json
-{
-  "compilerOptions": {
-    "strict": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "strictBindCallApply": true,
-    "strictPropertyInitialization": true,
-    "noImplicitThis": true,
-    "alwaysStrict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true
-  }
-}
-```
-
-## Type Safety Rules
-- No `any` - ever. Use `unknown` if type is truly unknown
-- No type assertions (`as SomeType`) without clear justification
-- No `@ts-ignore` or `@ts-expect-error` without explicit explanation
-- These rules apply to test code as well
-
-## Type Definitions
-- Prefer `type` over `interface` in all cases
-- Use explicit typing where it aids clarity
-- Leverage inference where appropriate
-- Utilize utility types effectively (Pick, Omit, Partial, Required)
-- Create domain-specific branded types:
-
-```typescript
-type UserId = string & { readonly brand: unique symbol };
-type PaymentAmount = number & { readonly brand: unique symbol };
-```
-
-## Schema-First Development
-```typescript
-import { z } from "zod";
-
-// Define schemas first
-const UserSchema = z.object({
-  id: z.string().uuid(),
-  email: z.string().email(),
-  name: z.string().min(1),
-});
-
-// Derive types from schemas
-type User = z.infer<typeof UserSchema>;
-
-// Use schemas at runtime boundaries
-export const parseUser = (data: unknown): User => {
-  return UserSchema.parse(data);
-};
-```
-
-## Schema Usage in Tests
-**CRITICAL**: Import real schemas from production code, never redefine:
-
-```typescript
-// ✅ CORRECT
-import { UserSchema, type User } from "@app/schemas";
-
-// ❌ WRONG
-const UserSchema = z.object({ ... }); // Don't redefine!
-```
-```
-
-### Exception Handling Pattern
-```
-# Project Guidelines: Exception Handling Standards
-
-- Implement consistent error handling across the application.
-- Use try-catch blocks for operations that might fail.
-- Create custom error classes for different error types.
-- Include meaningful error messages and error codes.
-- Log errors with appropriate severity levels (error, warn, info).
-- Never expose sensitive information in error messages.
-- Implement global error boundaries in React applications.
-- Handle async errors with proper Promise rejection handling.
-- Provide user-friendly error messages in the UI.
-- Implement retry logic for transient failures.
-- Use error monitoring services in production (Sentry, etc.).
-- Document expected errors and their handling strategies.
-- Always clean up resources in finally blocks.
-```
-
-# Generated on 6/29/2025
+# Generated on 6/30/2025

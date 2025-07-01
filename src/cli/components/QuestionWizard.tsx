@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Text, useInput } from 'ink';
 import { ProjectConfig, CLIFlags, ProjectConfigSchema } from '../../core/types.js';
-import { getAllQuestions, getNextQuestion } from '../../questions/index.js';
+import { getAllQuestions, getNextQuestion } from '../../resources/questions/index.js';
 import { QuestionDisplay } from './QuestionDisplay.js';
 import { ProgressBar } from './ProgressBar.js';
 

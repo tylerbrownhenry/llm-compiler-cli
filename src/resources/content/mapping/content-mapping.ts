@@ -1,4 +1,4 @@
-import { ProjectConfig } from '../../core/types.js';
+import { ProjectConfig } from '../../../core/types.js';
 
 export interface ContentRule {
   condition: (config: ProjectConfig) => boolean;
